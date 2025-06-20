@@ -144,6 +144,16 @@ models/*.pkl
 models/*.npy
 models/*.png
 
+# Large data files and directories (excluded from git due to size limits)
+data/last_mile_raw/
+data/*.json
+data/**/*.json
+*.json
+!requirements.txt
+!package.json
+!tsconfig.json
+!*.example.json
+
 # OS generated files
 .DS_Store
 .DS_Store?
