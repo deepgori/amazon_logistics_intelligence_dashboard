@@ -46,7 +46,7 @@ Set your Google Routes API key as an environment variable:
 
 ```bash
 # On macOS/Linux
-export GOOGLE_ROUTES_API_KEY="AIzaSyCdyYtpYe_5PGZgEutZWmfosL44iqtQQ5w"
+export GOOGLE_ROUTES_API_KEY="YOUR_GOOGLE_API_KEY"
 
 ```
 
