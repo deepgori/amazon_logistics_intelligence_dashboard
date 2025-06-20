@@ -1178,16 +1178,49 @@ elif page_selection == "ML Prediction Demo":
                 </div>
             """, unsafe_allow_html=True)
 
-            if prediction_result['predicted_delivery_status'] == 'Late':
-                st.markdown("""
-                    <div style="background: linear-gradient(135deg, #a11d33, #8a172b); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
-                        <h4 style="margin: 0; font-weight: 700; display: flex; align-items: center;">
-                            <span style="font-size: 1.5rem; margin-right: 0.75rem;">🚨</span>
-                            This order is predicted to be LATE.
-                        </h4>
+            # Get prediction values
+            is_late = prediction_result['predicted_delivery_status'] == 'Late'
+            delay_prob = prediction_result.get('predicted_delay_probability', 0.0)
+            
+            # Calculate confidence based on the prediction
+            confidence_pct = (delay_prob * 100) if is_late else ((1 - delay_prob) * 100)
+            
+            # Get delay probability for display
+            delay_prob_pct = delay_prob * 100
+
+            # Determine colors for the metrics
+            confidence_color = "#dc3545" if is_late else "#28a745"
+            delay_prob_color = "#dc3545" if delay_prob_pct > 50 else ("#ffc107" if delay_prob_pct > 25 else "#28a745")
+
+            # Create side-by-side display for Model Confidence and Delay Probability
+            col_confidence, col_delay = st.columns(2)
+
+            with col_confidence:
+                st.markdown(f"""
+                    <div style="background: {confidence_color}20; padding: 1rem; border-radius: 8px; border: 1px solid {confidence_color}; text-align: center; height: 100%;">
+                        <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem;">Model Confidence</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: {confidence_color};">
+                            {confidence_pct:.1f}%
+                        </div>
+                        <div style="font-size: 0.8rem; color: transparent;">&nbsp;</div>
                     </div>
                 """, unsafe_allow_html=True)
-                
+
+            with col_delay:
+                st.markdown(f"""
+                    <div style="background: {delay_prob_color}20; padding: 1rem; border-radius: 8px; border: 1px solid {delay_prob_color}; text-align: center; height: 100%;">
+                        <div style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5rem;">Delay Probability</div>
+                        <div style="font-size: 1.8rem; font-weight: bold; color: {delay_prob_color};">
+                            {delay_prob_pct:.1f}%
+                        </div>
+                        <div style="font-size: 0.8rem; color: transparent;">&nbsp;</div>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
+            
+            # Display contributing factors
+            if is_late:
                 factors = []
                 if features_dict.get('is_severe_weather_alert') == 1: factors.append("🌩️ Active weather alert in destination area")
                 if features_dict.get('is_supply_chain_news_alert') == 1: factors.append("📰 Recent supply chain disruption news")
@@ -1198,15 +1231,6 @@ elif page_selection == "ML Prediction Demo":
                 st.markdown(f'<div style="background: #1A1F24; padding: 1.5rem; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);"><h5 style="margin: 0 0 1rem 0; color: #FFFFFF;">🔍 Key Factors Contributing to Delay Risk</h5>{factors_html}</div>', unsafe_allow_html=True)
 
             else:
-                st.markdown("""
-                    <div style="background: linear-gradient(135deg, #166534, #14532d); color: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 8px 16px rgba(0,0,0,0.2);">
-                        <h4 style="margin: 0; font-weight: 700; display: flex; align-items: center;">
-                            <span style="font-size: 1.5rem; margin-right: 0.75rem;">✅</span>
-                            This order is predicted to be ON-TIME.
-                        </h4>
-                    </div>
-                """, unsafe_allow_html=True)
-                
                 factors = []
                 if features_dict.get('is_prime_member'): factors.append("✅ Prime member (priority handling)")
                 if features_dict.get('carrier') == 'AMZL': factors.append("🚚 Amazon Logistics (direct control)")
