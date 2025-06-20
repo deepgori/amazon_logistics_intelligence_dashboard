@@ -1,0 +1,21 @@
+[theme]
+# Base colors
+primaryColor = "#FF9900"  # Amazon orange
+backgroundColor = "#0E1117"  # Dark background
+secondaryBackgroundColor = "#1A1F25"  # Slightly lighter dark
+textColor = "#FAFAFA"  # Almost white text
+font = "sans serif"
+
+[server]
+enableXsrfProtection = true
+enableCORS = false
+
+[browser]
+gatherUsageStats = false
+
+[global]
+showWarningOnDirectExecution = false
+developmentMode = false
+
+[logger]
+level = "info" 
